@@ -4,7 +4,14 @@ For information on installing libraries, see: http://arduino.cc/en/Guide/Librari
 RGBLed library:
 - downloaded from https://github.com/citrus/RGBLed
 - installed
-- modified to work with Arduino 1.0
+- to modify it to work with Arduino 1.0, change RGBLed.h and RGBLed.cpp line
+  #include "WProgram.h"
+with
+  #if defined(ARDUINO) && ARDUINO >= 100 //check if using Arduino or Wiring
+    #include "Arduino.h"
+  #else
+    #include "WProgram.h"
+  #endif
 
 RGBlink library:
 - downloaded from https://github.com/l3kn/RGBlink
