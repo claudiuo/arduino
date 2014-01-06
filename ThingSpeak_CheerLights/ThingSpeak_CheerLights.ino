@@ -56,7 +56,7 @@ const int COLOR_WARMWHITE = 10;
 const int COLOR_PINK = 11; // pink added to CheerLights 12/20/13
 
 // RGB led Setup
-int redPin = 10;
+int redPin = 6;
 int greenPin = 3;
 int bluePin = 5;
 
@@ -88,6 +88,10 @@ void setup() {
   Serial.flush();
   delay(100);
   
+  pinMode(redPin, OUTPUT);
+  pinMode(greenPin, OUTPUT);
+  pinMode(bluePin, OUTPUT);
+
   // test the led
   testLeds(500);
   
@@ -107,8 +111,14 @@ void loop() {
 
     do {
         charIn = client.read(); // read a char from the buffer
+//Serial.println(charIn);
         response += charIn; // append that char to the string response
+        // restart storing of response if status is ok, so we don't waste a lot of memory
+        if (response.indexOf("Status: 200") > 0) {
+          response = "";
+        }
       } while (client.available() > 0); 
+    Serial.println(response);
           
     // Send matching commands to the RGB led
     if (response.indexOf("white") > 0)
@@ -168,6 +178,7 @@ void loop() {
     }
     else if (response.indexOf("pink") > 0)
     {  
+        // pink added to CheerLights 12/20/13
         lastCommand = "pink";
         ledColor(COLOR_PINK);
     }
@@ -243,7 +254,7 @@ void startEthernet()
 
   delay(1000);
   
-  // Connect to network amd obtain an IP address using DHCP
+  // Connect to network and obtain an IP address using DHCP
   if (Ethernet.begin(mac) == 0)
   {
     Serial.println("DHCP Failed, reset Arduino to try again");
@@ -252,13 +263,14 @@ void startEthernet()
   else
   {
     Serial.println("Arduino connected to network using DHCP");
+    Serial.println(Ethernet.localIP());
     Serial.println();
   }
   
   delay(1000);
 }
 
-void off()
+void ledsoff()
 {
   digitalWrite(redPin, LOW);
   digitalWrite(greenPin, LOW);
@@ -275,7 +287,7 @@ void ledColor(int color)
       break;
     case COLOR_BLACK:
       // black is basically all leds off
-      off();
+      ledsoff();
       break;
     case COLOR_RED:
       digitalWrite(redPin, HIGH);
@@ -308,34 +320,34 @@ void ledColor(int color)
       digitalWrite(bluePin, LOW);
       break;
     case COLOR_PURPLE:
-      off();  // clear all colors: may not be needed, seen problem when analogWrite is called after a digitalWrite
+      ledsoff();  // clear all colors: may not be needed, seen problem when analogWrite is called after a digitalWrite
       analogWrite(redPin, 128);
       analogWrite(greenPin, 0);
       analogWrite(bluePin, 128);
       break;
     case COLOR_ORANGE:
-      off();  // clear all colors: may not be needed, seen problem when analogWrite is called after a digitalWrite
+      ledsoff();  // clear all colors: may not be needed, seen problem when analogWrite is called after a digitalWrite
       // color: FFA500
       analogWrite(redPin, 255);
       analogWrite(greenPin, 165);
       analogWrite(bluePin, 0);
       break;
     case COLOR_WARMWHITE:
-      off();  // clear all colors: may not be needed, seen problem when analogWrite is called after a digitalWrite
+      ledsoff();  // clear all colors: may not be needed, seen problem when analogWrite is called after a digitalWrite
       // color: Cornsilk - FFF8DC
       analogWrite(redPin, 255);
       analogWrite(greenPin, 248);
       analogWrite(bluePin, 220);
       break;
     case COLOR_PINK:
-      off();  // clear all colors: may not be needed, seen problem when analogWrite is called after a digitalWrite
+      ledsoff();  // clear all colors: may not be needed, seen problem when analogWrite is called after a digitalWrite
       // color: FFC0CB
       analogWrite(redPin, 255);
       analogWrite(greenPin, 192);
       analogWrite(bluePin, 203);
       break;
     default: 
-      off();  // clear all colors: may not be needed, seen problem when analogWrite is called after a digitalWrite
+      ledsoff();  // clear all colors: may not be needed, seen problem when analogWrite is called after a digitalWrite
       // show some kind of color just so we show something: BDFF21
       analogWrite(redPin, 189);
       analogWrite(greenPin, 255);
@@ -360,7 +372,7 @@ void testLeds(int delayMs)
   delay(delayMs);
   ledColor(COLOR_YELLOW);
   delay(delayMs);
-  ledColor(COLOR_PURPLE);
+ ledColor(COLOR_PURPLE);
   delay(delayMs);
   ledColor(COLOR_ORANGE);
   delay(delayMs);
@@ -370,6 +382,7 @@ void testLeds(int delayMs)
   delay(delayMs);
   ledColor(-1);
   delay(delayMs);
-  off();
+  ledsoff();
   delay(delayMs);
 }
+
