@@ -372,7 +372,7 @@ void testLeds(int delayMs)
   delay(delayMs);
   ledColor(COLOR_YELLOW);
   delay(delayMs);
-  ledColor(COLOR_PURPLE);
+ ledColor(COLOR_PURPLE);
   delay(delayMs);
   ledColor(COLOR_ORANGE);
   delay(delayMs);
