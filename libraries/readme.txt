@@ -47,3 +47,6 @@ RGBlink library:
 8/9/14
 - downloaded and added virtual wire library from https://www.pjrc.com/teensy/td_libs_VirtualWire.html needed by this instructable: 
 http://www.instructables.com/id/ARDUINO-WIRELESS-HOME-SECURITY-SYSTEM. Interesting: this library has support for Teensy as well.
+
+2/10/17
+- added Adafruit_NeoPixel and TimerOne for the new code I am writing to turn LED strip on based on serial communication from node-red
