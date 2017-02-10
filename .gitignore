@@ -1,2 +1,4 @@
 *.zip
 *.mine
+libraries/Adafruit*
+libraries/TimerOne
