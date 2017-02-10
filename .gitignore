@@ -2,3 +2,4 @@
 *.mine
 libraries/Adafruit*
 libraries/TimerOne
+libraries/PololuLedStrip

@@ -14,7 +14,11 @@
 #endif
 
 #define PIN 6
-#define NUMPIXELS 30
+// there are 30 pixels but for some reason I noticed that 3 of them are used for each command
+// for example, pixels.setPixelColor(0, firstPixelColor); sets 3 pixels not just one
+// I assume this is because of a cheap LED strip in which each 3 LEDs are grouped together
+// until I find a solution (if any), treat the strip as having 10 LEDs
+#define NUMPIXELS 10
 
 // Parameter 1 = number of pixels in strip
 // Parameter 2 = Arduino pin number (most are valid)
@@ -36,7 +40,7 @@ volatile unsigned long now = 0;
 boolean doneReading = false;
 int type, fail, success, skip = 0;
 
-unsigned long timerPeriod = 0.2 * 60 * 1000 * 1000;    // min in micros
+unsigned long timerPeriod = 0.2 * 60 * 1000 * 1000;    // high value to overflow timer at 8388 ms
 unsigned long timerInterval = 1.0 * 60 * 1000;    // min in millis
 
 void myHandler() {
@@ -78,10 +82,6 @@ void serialEvent() {
 void setup() {
   Serial.begin(9600);
 
-  pinMode(LED_BUILTIN, OUTPUT);
-  // set to LOW to make it obvious when it becomes HIGH in the interrupt handler
-  digitalWrite(LED_BUILTIN, LOW);   // turn the LED off
-
   now = millis();
   Timer1.initialize(timerPeriod);
   Timer1.attachInterrupt(myHandler);
@@ -101,12 +101,10 @@ void loop() {
   //  blinkCopy = blinkCount;
   //  interrupts();
 
-  //    Serial.print(doneReading);
-
   // turn on the LEDs when a newline arrives
   if (doneReading) {
 
-    Serial.println("got all values. blinking led. restarting timer");
+    Serial.println("got all values. turning on LEDs. restarting timer");
 
     // turn on the LEDs
     // todo: send the correct values: for now, first is purple, rest are red, blue, green in order
@@ -129,7 +127,8 @@ void turnOnLEDs(uint32_t firstPixelColor, int howManyRed, int howManyBlue, int h
   // first pixel has the color based on first 3 args
   pixels.setPixelColor(0, firstPixelColor);
 
-  // todo: check the rest of args added up don't go over NUMPIXELS-1
+  // todo: check the rest of args added up don't go over NUMPIXELS-1;
+  // even if we do, not a problem going over, they just won't light up
 
   // light as many LEDs of each color as needed
   for (uint16_t i = 1; i <= howManyRed; i++) {
