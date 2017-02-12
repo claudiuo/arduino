@@ -1,5 +1,4 @@
 *.zip
 *.mine
-libraries/Adafruit*
-libraries/TimerOne
-libraries/PololuLedStrip
+libraries/**
+!libraries/readme.txt
